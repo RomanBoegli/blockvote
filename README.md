@@ -10,9 +10,11 @@ This business network defines:
 
 **Asset**
 `Option`
+`Poll`
 
 **Transaction**
-`Poll`
+`vote`
+`count`
 
 **Event**
 `invalidVote`
