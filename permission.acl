@@ -1,0 +1,158 @@
+/*
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+
+/***VOTER RULES***/
+rule VoterSeeUpdateThemselvesOnly {
+  description: "Voter can see and update their own record only"
+  participant(t): "org.example.basic.Voter"
+  operation: READ
+  resource(v): "org.example.basic.Voter"
+  condition: (v.getIdentifier() == t.getIdentifier())
+  action: ALLOW
+}
+rule VoterSeeTheirRegulator {
+  description: "Voter can see their polls"
+  participant(t): "org.example.basic.Voter"
+  operation: READ
+  resource(v): "org.example.basic.Regulator"
+  condition: (v.getIdentifier() == t.reg.getIdentifier())
+  action: ALLOW
+}
+rule VoterSeeTheirPolls {
+  description: "Voter can see their polls"
+  participant(t): "org.example.basic.Voter"
+  operation: READ
+  resource(v): "org.example.basic.Poll"
+  condition: (v.initiator.getIdentifier() == t.reg.getIdentifier())
+  action: ALLOW
+}
+rule VoterSeeTheirOptions {
+  description: "Voter can see their options"
+  participant(t): "org.example.basic.Voter"
+  operation: READ, UPDATE //needed
+  resource(v): "org.example.basic.Option"
+  condition: (v.poll.initiator.getIdentifier() == t.reg.getIdentifier())
+  action: ALLOW
+}
+rule VoterEnableVoting {
+    description: "Enable Voters to submit transactions"
+    participant: "org.example.basic.Voter"
+    operation: ALL
+    resource: "org.example.basic.vote"
+    action: ALLOW
+}
+rule VoterSeeOwnHistory {
+  description: "Voter should be able to see the history of their own transactions only"
+  participant(t): "org.example.basic.Voter"
+  operation: READ
+  resource(v): "org.hyperledger.composer.system.HistorianRecord"
+  condition: (v.participantInvoking.getIdentifier() == t.getIdentifier())
+  action: ALLOW
+}
+rule VoterSeeNoHistory {
+  description: "Voter should not see any history"
+  participant: "org.example.basic.Voter"
+  operation: READ
+  resource: "org.hyperledger.composer.system.HistorianRecord"
+  action: DENY
+}
+
+/***REGULATOR RULES***/
+rule RegulatorSeeUpdateThemselvesOnly {
+  description: "Regulator can see and update their own record only"
+  participant(t): "org.example.basic.Regulator"
+  operation: READ, UPDATE
+  resource(v): "org.example.basic.Regulator"
+  condition: (v.getIdentifier() == t.getIdentifier())
+  action: ALLOW
+}
+rule RegulatorSeeVoter {
+  description: "Regulator sees all Voter (cannot update)"
+  participant(t): "org.example.basic.Regulator"
+  operation: READ
+  resource(v): "org.example.basic.Voter"
+  condition: (v.reg.getIdentifier() == t.getIdentifier())
+  action: ALLOW
+}
+rule RegulatorCanAddAssets {
+    description: "Enable regualtors to set up polls"
+    participant: "org.example.basic.Regulator"
+    operation: ALL
+    resource: "org.hyperledger.composer.system.AddAsset"
+  	action: ALLOW
+}
+rule RegulatorSeeTheirPolls {
+  description: "Regulator can see their polls"
+  participant(t): "org.example.basic.Regulator"
+  operation: ALL
+  resource(v): "org.example.basic.Poll"
+  condition: (v.initiator.getIdentifier() == t.getIdentifier())
+  action: ALLOW
+}
+rule RegulatorSeeTheirOptions {
+  description: "Regulator can see their options"
+  participant(t): "org.example.basic.Regulator"
+  operation: ALL
+  resource(v): "org.example.basic.Option"
+  condition: (v.poll.initiator.getIdentifier() == t.getIdentifier())
+  action: ALLOW
+}
+rule RegulatorSeeOwnHistory {
+  description: "Regulator should be able to see the history of their own transactions only / and their citizens"
+  participant(t): "org.example.basic.Regulator"
+  operation: READ
+  resource(v): "org.hyperledger.composer.system.HistorianRecord"
+  condition: (v.participantInvoking.getIdentifier() == t.getIdentifier() || v.participantInvoking.reg.getIdentifier() == t.getIdentifier())
+  action: ALLOW
+}
+rule RegulatorSeeNoHistory {
+  description: "Regulator should not see any history"
+  participant: "org.example.basic.Regulator"
+  operation: READ
+  resource: "org.hyperledger.composer.system.HistorianRecord"
+  action: DENY
+}
+rule RegulatorEnableCounting {
+    description: "Enable Regulators to evaluate poll results"
+    participant: "org.example.basic.Regulator"
+    operation: ALL
+    resource: "org.example.basic.count"
+    action: ALLOW
+}
+
+/***ADMIN RULES***/
+rule NetworkAdminUser {
+    description: "Grant business network administrators full access to user resources"
+    participant: "org.hyperledger.composer.system.NetworkAdmin"
+    operation: ALL
+    resource: "**"
+    action: ALLOW
+}
+rule NetworkAdminSystem {
+    description: "Grant business network administrators full access to system resources"
+    participant: "org.hyperledger.composer.system.NetworkAdmin"
+    operation: ALL
+    resource: "org.hyperledger.composer.system.**"
+    action: ALLOW
+}
+
+/***GENERAL RULES***/
+rule SystemACL {
+    description: "System ACL to permit all access"
+    participant: "org.hyperledger.composer.system.Participant"
+    operation: ALL
+    resource: "org.hyperledger.composer.system.**"
+    action: ALLOW
+}
