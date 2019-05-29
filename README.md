@@ -1,20 +1,23 @@
-# Basic Sample Business Network
+# Blockvote Fabric Example Network
 
 > This is the "Hello World" of Hyperledger Composer samples, which demonstrates the core functionality of Hyperledger Composer by changing the value of an asset.
 
 This business network defines:
 
 **Participant**
-`SampleParticipant`
+`Regulator`
+`Voter`
 
 **Asset**
-`SampleAsset`
+`Option`
 
 **Transaction**
-`SampleTransaction`
+`Poll`
 
 **Event**
-`SampleEvent`
+`invalidVote`
+`currentResult`
+`debug`
 
 SampleAssets are owned by a SampleParticipant, and the value property on a SampleAsset can be modified by submitting a SampleTransaction. The SampleTransaction emits a SampleEvent that notifies applications of the old and new values for each modified SampleAsset.
 
