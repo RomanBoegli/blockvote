@@ -21,7 +21,15 @@ This business network defines:
 `currentResult`
 `debug`
 
-SampleAssets are owned by a SampleParticipant, and the value property on a SampleAsset can be modified by submitting a SampleTransaction. The SampleTransaction emits a SampleEvent that notifies applications of the old and new values for each modified SampleAsset.
+**Requirements**
+- every invocation must be stored as is
+- support different polls with different amount of options
+- only pre-registered voters can vote
+- voters authenticate by means of signature
+- voters can only vote once per poll (no double-votes)
+- voters can only vote on polls initiated by its regulator
+- invalid votes (not pre-registered, invalid signature, double-vote) must be recorded
+- regulators can count the poll
 
 To test this Business Network Definition in the **Test** tab:
 
