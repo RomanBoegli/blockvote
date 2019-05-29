@@ -33,41 +33,62 @@ This business network defines:
 
 To test this Business Network Definition in the **Test** tab:
 
-Create a `SampleParticipant` participant:
+Create a `Regulator` participant:
 
 ```
-{
-  "$class": "org.example.basic.SampleParticipant",
-  "participantId": "Toby",
-  "firstName": "Tobias",
-  "lastName": "Hunter"
+participant Regulator identified by regID {
+  o String regID
+  o String name
 }
 ```
 
-Create a `SampleAsset` asset:
+Create a `Voter` participant:
 
 ```
-{
-  "$class": "org.example.basic.SampleAsset",
-  "assetId": "assetId:1",
-  "owner": "resource:org.example.basic.SampleParticipant#Toby",
-  "value": "original value"
+participant Voter identified by voterID {
+  o String voterID
+  o String privatekey
+  o String publickey
+  --> Regulator reg
 }
 ```
-
-Submit a `SampleTransaction` transaction:
+Create a `Poll` asset:
 
 ```
-{
-  "$class": "org.example.basic.SampleTransaction",
-  "asset": "resource:org.example.basic.SampleAsset#assetId:1",
-  "newValue": "new value"
+asset Poll identified by pollID {
+  o String pollID
+  o String title
+  -->Regulator initiator
 }
 ```
+Create a `Option` asset:
 
-After submitting this transaction, you should now see the transaction in the Transaction Registry and that a `SampleEvent` has been emitted. As a result, the value of the `assetId:1` should now be `new value` in the Asset Registry.
+```
+asset Option identified by optionID {
+  o String optionID
+  --> Poll poll
+  o String text
+  --> Voter[] voters
+}
+```
+Submit a `vote` transaction:
 
-Congratulations!
+```
+transaction vote {
+  --> Voter voter
+  --> Option option
+  o String signature
+}
+```
+Submit a `count` transaction:
+
+```
+transaction count{
+  --> Poll poll
+  o String stat
+}
+
+```
 
 ## License <a name="license"></a>
 Hyperledger Project source code files are made available under the Apache License, Version 2.0 (Apache-2.0), located in the LICENSE file. Hyperledger Project documentation files are made available under the Creative Commons Attribution 4.0 International License (CC-BY-4.0), available at http://creativecommons.org/licenses/by/4.0/.
